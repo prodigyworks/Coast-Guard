@@ -85,9 +85,13 @@ function confirmSchedule() {
 			</td>
 		</tr>
 		<tr>
-			<td valign=top><b>Notes</b></td>
+			<td><b>Watch</b></td>
 			<td>
-				<textarea class="tinyMCE" id="notes" name="notes"></textarea>
+				<SELECT id="watch" name="watch">
+					<OPTION value="A">A</OPTION>
+					<OPTION value="B">B</OPTION>
+					<OPTION value="E">Either</OPTION>
+				</SELECT>
 			</td>
 		</tr>
 	</table>
@@ -114,9 +118,10 @@ function showCalendar($currentRota) {
 									rotaid: rotaid,
 									eventid: $("#eventid").val(),
 									userid: $("#userid").val(),
-									notes: tinyMCE.get("notes").getContent(),
+									notes: "",
 									startdate: $("#startdate").val(),
-									enddate: $("#enddate").val()
+									enddate: $("#enddate").val(),
+									watch: $("#watch").val()
 								},
 								function(items) {
 									$("#calendar").fullCalendar('refetchEvents');
@@ -136,7 +141,6 @@ function showCalendar($currentRota) {
 			editable: true,
 			aspectRatio: 2.1,
 			allDayDefault: false, 
-			
 			header: {
 				left: 'prev,next today',
 				center: 'title',
@@ -152,7 +156,7 @@ function showCalendar($currentRota) {
 					callAjax(
 							"finddata.php", 
 							{ 
-								sql: "SELECT A.id, A.userid, A.notes, " +
+								sql: "SELECT A.id, A.userid, A.watch, " +
 									 "DATE_FORMAT(A.startdate, '%d/%m/%Y') AS startdate, " +
 									 "DATE_FORMAT(A.enddate, '%d/%m/%Y') AS enddate " +
 									 "FROM <?php echo $_SESSION['DB_PREFIX'];?>rotaitem A " + 
@@ -166,7 +170,7 @@ function showCalendar($currentRota) {
 									$("#userid").val(node.userid);
 									$("#startdate").val(node.startdate);
 									$("#enddate").val(node.enddate);
-									tinyMCE.get("notes").setContent(node.notes);
+									$("#watch").val(node.watch);
 
 									$("#detaildialog").dialog("open");
 								}
@@ -183,7 +187,7 @@ function showCalendar($currentRota) {
 				$("#userid").val("<?php echo getLoggedOnMemberID(); ?>");
 				$("#startdate").val(formatDate(date));
 				$("#enddate").val(formatDate(date));
-				tinyMCE.get("notes").setContent("");
+				$("#watch").val("B");
 				
 				$("#detaildialog").dialog("open");
 <?php 

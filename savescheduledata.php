@@ -13,7 +13,7 @@
 	$watch = mysql_escape_string($_POST['watch']);
 	
 	if ($_POST['eventid'] == "") {
-		$qry = "INSERT INTO {$_SESSION['DB_PREFIX']}rotaitem 
+		$qry = "INSERT INTO {$_SESSION['DB_PREFIX']}scheduleitem 
 				(
 					rotaid, userid, startdate, enddate, notes, watch
 				)
@@ -31,7 +31,7 @@
 		
 	} else {
 		$id = $_POST['eventid'];
-		$qry = "UPDATE {$_SESSION['DB_PREFIX']}rotaitem SET 
+		$qry = "UPDATE {$_SESSION['DB_PREFIX']}scheduleitem SET 
 				startdate = '$startdate',
 				enddate = '$enddate',
 				userid = $userid,
@@ -46,7 +46,7 @@
 	}
 	
 	$sql = "SELECT A.*, B.fullname
-			FROM {$_SESSION['DB_PREFIX']}rotaitem A
+			FROM {$_SESSION['DB_PREFIX']}scheduleitem A
 			INNER JOIN {$_SESSION['DB_PREFIX']}members B
 			ON B.member_id = A.userid
 			WHERE A.id = $id";

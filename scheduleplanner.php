@@ -66,13 +66,23 @@ function confirmSchedule() {
 		<tr>
 			<td><b>Start Date</b></td>
 			<td>
-				<input class="datepicker" id="startdate" name="startdate" />
+				<input class="datepicker" id="startdate" name="startdate" disabled />
 			</td>
 		</tr>
 		<tr>
 			<td><b>End Date</b></td>
 			<td>
-				<input class="datepicker" id="enddate" name="enddate" />
+				<input class="datepicker" id="enddate" name="enddate" disabled />
+			</td>
+		</tr>
+		<tr>
+			<td><b>Watch</b></td>
+			<td>
+				<SELECT id="watch" name="watch">
+					<OPTION value="A">A</OPTION>
+					<OPTION value="B">B</OPTION>
+					<OPTION value="E">Either</OPTION>
+				</SELECT>
 			</td>
 		</tr>
 		<tr>
@@ -96,7 +106,7 @@ function confirmSchedule() {
 				buttons: {
 					Ok: function() {
 						callAjax(
-								"saverotadata.php", 
+								"savescheduledata.php", 
 								{ 
 									scheduleid: scheduleid,
 									eventid: $("#eventid").val(),
@@ -139,21 +149,37 @@ function confirmSchedule() {
 					callAjax(
 							"finddata.php", 
 							{ 
-								sql: "SELECT A.id, A.userid, A.notes, " +
+								sql: "SELECT A.id, A.userid, A.notes, A.watch, " +
 									 "DATE_FORMAT(A.startdate, '%d/%m/%Y') AS startdate, " +
 									 "DATE_FORMAT(A.enddate, '%d/%m/%Y') AS enddate " +
-									 "FROM <?php echo $_SESSION['DB_PREFIX'];?>rotaitem A " + 
+									 "FROM <?php echo $_SESSION['DB_PREFIX'];?>scheduleitem A " + 
 									 "WHERE A.id = " + calEvent.id
 							},
 							function(data) {
 								if (data.length > 0) {
 									var node = data[0];
-								
+
+									$.ajax({
+										url: "createrotacombo.php",
+										dataType: 'html',
+										async: false,
+										data: {
+											scheduleid: calEvent.id
+										},
+										type: "POST",
+										error: function(jqXHR, textStatus, errorThrown) {
+											alert(errorThrown);
+										},
+										success: function(data) {
+											$("#userid").html(data).trigger("change");
+										}
+									});
+
 									$("#eventid").val(node.id);
-									$("#userid").val(node.userid);
+									$("#watch").val(node.watch);
 									$("#startdate").val(node.startdate);
 									$("#enddate").val(node.enddate);
-									tinyMCE.get("notes").setContent(node.notes);
+									$("#notes").val(node.notes);
 
 									$("#detaildialog").dialog("open");
 								}

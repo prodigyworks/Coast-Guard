@@ -3,7 +3,7 @@
 	
 	start_db();
 	
-	function getRandomSelection($users) {
+	function getRandomSelection($users, $existingusers) {
 		$womenonly = true;
 		$certified = false;
 		
@@ -23,11 +23,22 @@
 		
 		$randomusers = array();
 		
-		$line1 = rand(0, count($users) - 1);
-		$line2 = rand(0, count($users) - 1);
 
-		while ($line1 == $line2) {
+		for (; ;) {
+			$line1 = rand(0, count($users) - 1);
 			$line2 = rand(0, count($users) - 1);
+		
+			if ($line1 == $line2) {
+				continue;
+			}
+			
+			if ($line1 != $line2) { 
+				break;
+			}
+			
+			if ($line1 != $line2) { 
+				break;
+			}
 		}
 		
 		array_push($randomusers, $users[$line1]);
@@ -35,7 +46,72 @@
 		
 		return $randomusers;
 	}
-	
+		
+	function calculate($scheduleid, $rotaid, $date, $startDate, $endDate, $watch, $existingusers) {
+		$users = array();
+		$sql = "SELECT A.*, B.sex, B.certified 
+				FROM {$_SESSION['DB_PREFIX']}rotaitem A
+				INNER JOIN {$_SESSION['DB_PREFIX']}members B
+				ON B.member_id = A.userid
+				WHERE A.rotaid = $rotaid 
+				AND A.watch IN ('E', '$watch')
+				AND A.startdate <= '$date' 
+				AND A.enddate >= '$date'";
+		$result = mysql_query($sql);
+		
+		if ($result) {
+			while (($member = mysql_fetch_assoc($result))) {
+				$duplicate = false;
+				$line = array(
+						"id"		=> $member['id'],
+						"userid"	=> $member['userid'],
+						"sex"		=> $member['sex'],
+						"watch"		=> $watch,
+						"date"		=> $date,
+						"certified"	=> $member['certified']
+					);
+					
+				foreach ($existingusers as $existinguser) {
+					if ($existinguser['userid'] == $line['userid']) {
+						$duplicate = true;
+					}
+				}
+					
+				if (! $duplicate) {
+					array_push($users, $line);
+				}
+			}
+			
+			$chosen = getRandomSelection($users, $existingusers);
+			
+			if (count($chosen) == 2) {
+				foreach ($chosen as $user) {
+					$userid = $user['userid'];
+					$watch = $user['watch'];
+					
+					$sql = "INSERT INTO {$_SESSION['DB_PREFIX']}scheduleitem
+							(
+								scheduleid, startdate, enddate, userid, watch
+							)
+							VALUES
+							(
+								$scheduleid, '$date', '$date', $userid, '$watch'
+							)";
+					$itemresult = mysql_query($sql);
+					
+					if (! $itemresult) {
+						logError($sql . " - " . mysql_error());
+					}
+				}
+			}
+			
+		} else {
+			logError($sql . " - " . mysql_error());
+		}
+		
+		return $chosen;
+	}
+		
 	$rotaid = $_GET['id'];
 	$sql = "SELECT startdate, enddate 
 			FROM {$_SESSION['DB_PREFIX']}rota 
@@ -76,59 +152,11 @@
 	$scheduleid = mysql_insert_id();
 	
 	while (strtotime($date) < strtotime($endDate)) {
-		$sql = "SELECT A.*, B.sex, B.certified 
-				FROM {$_SESSION['DB_PREFIX']}rotaitem A
-				INNER JOIN {$_SESSION['DB_PREFIX']}members B
-				ON B.member_id = A.userid
-				WHERE A.rotaid = $rotaid 
-				AND A.startdate <= '$date' 
-				AND A.enddate >= '$date'";
-		$result = mysql_query($sql);
-		
-		logError($sql, false);
-		
-		if ($result) {
-			$users = array();
-			
-			while (($member = mysql_fetch_assoc($result))) {
-				$line = array(
-						"id"		=> $member['id'],
-						"userid"	=> $member['userid'],
-						"sex"		=> $member['sex'],
-						"date"		=> $date,
-						"certified"	=> $member['certified']
-					);
-					
-				array_push($users, $line);
-			}
-			
-			$chosen = getRandomSelection($users);
-			
-			if (count($chosen) == 2) {
-				foreach ($chosen as $user) {
-					$userid = $user['userid'];
-					$sql = "INSERT INTO {$_SESSION['DB_PREFIX']}scheduleitem
-							(
-								scheduleid, startdate, enddate, userid
-							)
-							VALUES
-							(
-								$scheduleid, '$date', '$date', $userid
-							)";
-					$itemresult = mysql_query($sql);
-					
-					if (! $itemresult) {
-						logError($sql . " - " . mysql_error());
-					}
-				}
-			}
-			
-		} else {
-			logError($sql . " - " . mysql_error());
-		}
+		$users = calculate($scheduleid, $rotaid, $date, $startDate, $endDate, "A", array());
+		calculate($scheduleid, $rotaid, $date, $startDate, $endDate, "B", $users);
 		
 	 	$date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
 	}
 	
-	header("location: rotaconfirmed.php?id=" . $_GET['id']);
+	header("location: scheduleplanner.php?id=" . $_GET['id']);
 ?>

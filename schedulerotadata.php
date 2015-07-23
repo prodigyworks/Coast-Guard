@@ -29,12 +29,31 @@
 
 	if($result) {
 		while (($member = mysql_fetch_assoc($result))) {
+			$startdate = $member['startdate'];
+			$enddate = $member['enddate'];
+			
+			if ($member['watch'] == "A") {
+				$startdate .= " 00:00";
+				$enddate .= " 11:59";
+				$allDay = "false";
+								
+			} else if ($member['watch'] == "B") {
+				$startdate .= " 12:00";
+				$enddate .= " 23:59";
+				$allDay = "false";
+				
+			} else {
+				$startdate .= " 00:00";
+				$enddate .= " 23:59";
+				$allDay = "true";
+			}
+			
 			$line = array(
 					"id"				=> $member['id'], 
-					"allDay"			=> "true",
+					"allDay"			=> $allDay,
 					"className"			=> "eventcat_" . $member['member_id'],
-					"start"				=> $member['startdate'],
-					"end"				=> $member['enddate'],
+					"start"				=> $startdate,
+					"end"				=> $enddate,
 					"title"				=> $member['fullname'],
 					"scheduleid"		=> $member['scheduleid']
 				);
