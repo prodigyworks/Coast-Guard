@@ -144,32 +144,6 @@
 				'script' 	  => 'live'
 			)
 		);
-	$crud->checkconstraints = array(
-			array(
-				'table'      => 'applicationtables',
-				'column' 	 => 'memberid'
-			),
-			array(
-				'table'      => 'applicationtables',
-				'column' 	 => 'memberid'
-			),
-			array(
-				'table'      => 'errors',
-				'column' 	 => 'memberid'
-			),
-			array(
-				'table'      => 'filter',
-				'column' 	 => 'memberid'
-			),
-			array(
-				'table'      => 'loginaudit',
-				'column' 	 => 'memberid'
-			),
-			array(
-				'table'      => 'userroles',
-				'column' 	 => 'memberid'
-			)
-		);
 	$crud->allowAdd = false;
 	$crud->dialogwidth = 950;
 	$crud->title = "Users";
@@ -225,20 +199,24 @@
 			array(
 				'name'       => 'landline',
 				'length' 	 => 13,
+				'required'	 => false,
 				'label' 	 => 'Land line'
 			),
 			array(
 				'name'       => 'mobile',
 				'length' 	 => 13,
+				'required'	 => false,
 				'label' 	 => 'Mobile'
 			),
 			array(
 				'name'       => 'bgcolour',
+				'required'	 => false,
 				'length' 	 => 18,
 				'label' 	 => 'Background Colour'
 			),
 			array(
 				'name'       => 'fgcolour',
+				'required'	 => false,
 				'length' 	 => 18,
 				'label' 	 => 'Foreground Colour'
 			),
@@ -277,7 +255,7 @@
 			array(
 				'name'       => 'certified',
 				'length' 	 => 6,
-				'label' 	 => 'Certified',
+				'label' 	 => 'Certificated',
 				'type'       => 'COMBO',
 				'options'    => array(
 						array(
@@ -301,6 +279,7 @@
 			array(
 				'name'       => 'title',
 				'length'	 => 10,
+				'required'	 => false,
 				'label' 	 => 'Title'
 			),
 			array(
@@ -316,21 +295,6 @@
 				'showInView' => false,
 				'filter'     => false,
 				'label' 	 => 'Details'
-			),
-			array(
-				'name'       => 'passwd',
-				'type'		 => 'PASSWORD',
-				'length' 	 => 30,
-				'showInView' => false,
-				'label' 	 => 'Password'
-			),
-			array(
-				'name'       => 'cpassword',
-				'type'		 => 'PASSWORD',
-				'length' 	 => 30,
-				'bind' 	 	 => false,
-				'showInView' => false,
-				'label' 	 => 'Confirm Password'
 			)
 		);
 		

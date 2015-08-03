@@ -15,6 +15,7 @@
 			FROM {$_SESSION['DB_PREFIX']}rota A
 			WHERE A.startdate = '$startdate' 
 			AND A.enddate = '$enddate'";
+	logError($sql, false);
 	$result = mysql_query($sql);	
 	
 	if($result) {

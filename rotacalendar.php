@@ -107,7 +107,7 @@ function showCalendar($currentRota) {
 	$(document).ready(function() {
 		$("#detaildialog").dialog({
 				modal: true,
-				width: 900,
+				width: 400,
 				autoOpen: false,
 				title: "Details",
 				buttons: {

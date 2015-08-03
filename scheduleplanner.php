@@ -9,6 +9,9 @@
 <link rel="stylesheet" href="css/fullcalendar.css" type="text/css" media="all" />
 <link rel="stylesheet" href="css/fullcalendar.print.css" type="text/css" media="all" />
 <style>
+	.fc-event:hover {
+		color: black ! important;
+	}
 	.ui-dialog {
 		margin-top: 10px;
 		min-height: 50px;
@@ -45,7 +48,15 @@ function confirmSchedule() {
 	$("#confirmdialog").dialog("close");
 	window.location.href = "confirmrota.php?id=" + scheduleid;
 }
+
+function printSchedule() {
+	window.open("scheduleplannerdetails.php?from=" + globalFromDate + "&to=" + globalToDate);
+}
 </script>
+<div id="confirmbutton">
+   	<div class="wrapper"><a class='rgap2 link1' href="javascript:printSchedule()"><em><b><img src='images/print.png' /> Print</b></em></a></div>
+</div>
+<hr />
 <div id='calendar'></div>
 <div id="detaildialog" class="modal">
 	<input type="hidden" id="eventid" />
@@ -96,6 +107,8 @@ function confirmSchedule() {
 
 <script>
 	var scheduleid = 0;
+	var globalToDate = null;
+	var globalFromDate = null;
 	
 	$(document).ready(function() {
 		$("#detaildialog").dialog({
@@ -218,6 +231,9 @@ function confirmSchedule() {
 		    	var startDate = startYear + "-" + padZero(start.getMonth() + 1) + "-" + padZero(start.getDate());
 		    	var endDate = endYear + "-" + padZero(end.getMonth() + 1) + "-" + padZero(end.getDate());
 
+		    	globalToDate = endDate;
+		    	globalFromDate = startDate;
+		    	
 				callAjax(
 						"findscheduleid.php", 
 						{ 
@@ -261,11 +277,46 @@ function confirmSchedule() {
                         }
                         
                         callback(events);
+
+                        var found = false;
+                        var days = 0;
+
+                        $(".fc-widget-content").each(function() {
+                            	var dayn = $(this).find(".fc-day-number").html();
+
+                            	if (! found && dayn == 6) {
+                                	found = true;
+                            	}
+
+                            	if (found && dayn == 6 && days > 1) {
+                                	found = false;
+                            	}
+
+                            	if (found) {
+                                	$(this).css("background-color", "yellow");
+                                	
+                            	} else {
+                                	$(this).css("background-color", "white");
+                            	}
+
+                            	if (found) {
+                                	days++;
+                            	}
+	                        });
+
+                		$(".fc-event-time").each(function() {
+                				if ($(this).html() == "12a") {
+                					$(this).html("A");
+                				}
+                				
+                				if ($(this).html() == "12p") {
+                					$(this).html("B");
+                				}
+                			});
 			        }
 			     });
 		    }
 		});
-		
 	});
 	
 	

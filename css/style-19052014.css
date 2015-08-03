@@ -1486,6 +1486,10 @@ form label {
 	vertical-align: bottom;
 	font-weight: bold;
 }
+#embeddedcontent {
+	height:600px;
+	width:960px;
+}
 
 #embeddedcontent div, #embeddedcontent form {
 	background-color:white ! important;

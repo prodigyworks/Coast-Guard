@@ -224,6 +224,7 @@ html .fc,
 .fc-state-hover,
 .fc-state-hover .fc-button-inner {
 	border-color: #999;
+	color: black;
 	}
 	
 .fc-state-down,

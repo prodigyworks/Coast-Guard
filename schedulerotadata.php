@@ -7,22 +7,11 @@
 	
 	$scheduleid = $_POST['scheduleid'];
 	
-	if (isUserInRole("ADMIN")) {
-		$sql = "SELECT A.*, B.fullname, B.member_id
-				FROM {$_SESSION['DB_PREFIX']}scheduleitem A
-				INNER JOIN {$_SESSION['DB_PREFIX']}members B
-				ON B.member_id = A.userid
-				WHERE scheduleid = $scheduleid";
-		
-	} else {
-		$sql = "SELECT A.*, B.fullname, B.member_id
-				FROM {$_SESSION['DB_PREFIX']}scheduleitem A
-				INNER JOIN {$_SESSION['DB_PREFIX']}members B
-				ON B.member_id = A.userid
-				WHERE scheduleid = $scheduleid
-				AND B.member_id = " . getLoggedOnMemberID();
-	}
-	
+	$sql = "SELECT A.*, B.fullname, B.member_id
+			FROM {$_SESSION['DB_PREFIX']}scheduleitem A
+			INNER JOIN {$_SESSION['DB_PREFIX']}members B
+			ON B.member_id = A.userid
+			WHERE scheduleid = $scheduleid";
 	$result = mysql_query($sql);	
 
 	$json = array();
