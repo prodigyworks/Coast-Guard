@@ -131,6 +131,20 @@ function showCalendar($currentRota) {
 			
 						$(this).dialog("close");
 					},
+					"Remove": function() {
+						callAjax(
+								"removerotadata.php", 
+								{ 
+									eventid: $("#eventid").val()
+								},
+								function(items) {
+									$("#calendar").fullCalendar('refetchEvents');
+								},
+								false
+							);
+			
+						$(this).dialog("close");
+					},
 					Cancel: function() {
 						$(this).dialog("close");
 					}

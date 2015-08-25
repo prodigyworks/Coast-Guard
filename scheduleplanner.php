@@ -296,7 +296,7 @@ function printSchedule() {
                                 	$(this).css("background-color", "yellow");
                                 	
                             	} else {
-                                	$(this).css("background-color", "white");
+                                	$(this).css("background-color", "red");
                             	}
 
                             	if (found) {
