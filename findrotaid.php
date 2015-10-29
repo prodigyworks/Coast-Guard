@@ -10,6 +10,25 @@
 	$status = "N";
 	$enddate = $_POST['enddate'];
 	$startdate = $_POST['startdate'];
+	$startFound = false;
+	$date = $startdate;
+	
+	while (strtotime($date) < strtotime($enddate)) {
+		if (! $startFound) {
+			if (date("d", strtotime($date)) == 6) {
+				$startFound = true;
+				$startdate = $date;
+			}
+		
+		} else {
+			if (date("d", strtotime($date)) == 5) {
+				$enddate = $date;
+				break;
+			}
+		}
+		
+	 	$date = date ("Y-m-d", strtotime("+1 day", strtotime($date)));
+	}
 	
 	$sql = "SELECT A.id, A.status
 			FROM {$_SESSION['DB_PREFIX']}rota A

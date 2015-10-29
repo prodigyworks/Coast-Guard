@@ -36,7 +36,6 @@
 	}
 ?>
 </style>
-<script type="text/javascript" src="js/gcal.js"></script>
 <script type="text/javascript" src="js/fullcalendar.min.js"></script>
 <script>
 function createSchedule() {
@@ -54,7 +53,9 @@ function printSchedule() {
 }
 </script>
 <div id="confirmbutton">
-   	<div class="wrapper"><a class='rgap2 link1' href="javascript:printSchedule()"><em><b><img src='images/print.png' /> Print</b></em></a></div>
+   	<div class="wrapper">
+   		<a class='rgap2 link1' href="javascript:printSchedule()"><em><b><img src='images/print.png' /> Print</b></em></a>
+   	</div>
 </div>
 <hr />
 <div id='calendar'></div>
@@ -145,8 +146,31 @@ function printSchedule() {
 		$('#calendar').fullCalendar({
 			editable: true,
 			aspectRatio: 2.1,
-			allDayDefault: false, 
-			
+			allDayDefault: false,
+<?php
+	if (isset($_GET['id'])) {
+		$qry = "SELECT 
+				DATE_FORMAT(startdate, '%Y') AS cyear,  
+				DATE_FORMAT(startdate, '%m') AS cmonth,  
+				DATE_FORMAT(startdate, '%d') AS cday  
+				FROM {$_SESSION['DB_PREFIX']}schedule 
+				WHERE id = {$_GET['id']}";
+		$result = mysql_query($qry);
+		
+		//Check whether the query was successful or not
+		if ($result) {
+			while (($member = mysql_fetch_assoc($result))) {
+				echo "year: " . $member['cyear'] . ", ";
+				echo "month: " . ($member['cmonth'] - 1) . ", ";
+				echo "date: " . $member['cday'] . ", ";
+			}
+
+		} else {
+			logError($qry . " - " . mysql_error());
+		}
+	}
+?>
+ 
 			header: {
 				left: 'prev,next today',
 				center: 'title',

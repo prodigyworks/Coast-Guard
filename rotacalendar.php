@@ -45,16 +45,37 @@ function confirmSchedule() {
 	window.location.href = "confirmrota.php?id=" + rotaid;
 }
 </script>
+<div id="confirmbutton">
+   	<div class="wrapper">
 <?php 
 	if (isUserInRole("ADMIN")) {
 ?>
-<div id="confirmbutton">
-   	<div class="wrapper"><a class='rgap2 link1' href="javascript:createSchedule()"><em><b><img src='images/publish.png' /> Create Schedule</b></em></a></div>
-</div>
-<hr />
+   		<a class='rgap2 link1' href="javascript:createSchedule()"><em><b><img src='images/publish.png' /> Create Schedule</b></em></a>
+<?php		
+	} else {
+		$memberid = getLoggedOnMemberID();
+		$bid = 5;
+		$qry = "SELECT bid 
+				FROM {$_SESSION['DB_PREFIX']}bid 
+				WHERE memberid = $memberid";
+		$result = mysql_query($qry);
+		
+		//Check whether the query was successful or not
+		if ($result) {
+			while (($member = mysql_fetch_assoc($result))) {
+				$bid = $member['bid'];
+			}
+		}
+?>
+      	<span>BID </span>
+   		<input type="text" id="bid" size=4 value="<?php echo $bid; ?>" />
+   		<button id="bidbutton">Save</button>
 <?php 
 	}
 ?>
+   	</div>
+</div>
+<hr />
 <div id='calendar'></div>
 <div id="detaildialog" class="modal">
 	<input type="hidden" id="eventid" />
@@ -150,6 +171,19 @@ function showCalendar($currentRota) {
 					}
 				}
 			});
+
+		$("#bidbutton").click(
+				function() {
+					callAjax(
+							"savebid.php", 
+							{ 
+								bid: $("#bid").val()
+							},
+							function(data) {
+							}
+						);
+				}
+			);
 
 		$('#calendar').fullCalendar({
 			editable: true,
@@ -266,6 +300,32 @@ function showCalendar($currentRota) {
                         }
                         
                         callback(events);
+                        
+                        var found = false;
+                        var days = 0;
+
+                        $(".fc-widget-content").each(function() {
+                            	var dayn = $(this).find(".fc-day-number").html();
+
+                            	if (! found && dayn == 6) {
+                                	found = true;
+                            	}
+
+                            	if (found && dayn == 6 && days > 1) {
+                                	found = false;
+                            	}
+
+                            	if (found) {
+                                	$(this).css("background-color", "yellow");
+                                	
+                            	} else {
+                                	$(this).css("background-color", "red");
+                            	}
+
+                            	if (found) {
+                                	days++;
+                            	}
+	                        });
 			        }
 			     });
 		    }

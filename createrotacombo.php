@@ -30,8 +30,6 @@
 	}
 	
 	$in = ArrayToInClause($users);
-	logError($sql, false);
-		logError($in, false);
 	
 	createComboOptions("member_id", "fullname", "{$_SESSION['DB_PREFIX']}members", "WHERE member_id IN($in)", false);
 ?>
